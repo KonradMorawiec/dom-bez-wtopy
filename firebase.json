@@ -1,0 +1,12 @@
+{
+    "hosting": {
+      "public": "dist/dom-bez-wtopy/browser",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  }

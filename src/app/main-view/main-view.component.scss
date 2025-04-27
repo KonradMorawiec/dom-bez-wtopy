@@ -1,0 +1,17 @@
+/* main-view.component.scss */
+:host {
+    display: block;
+    height: 100%;
+}
+
+.tab-button {
+    transition: all 0.2s ease;
+}
+
+.checklist-item {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: rgba(59, 130, 246, 0.05);
+    }
+}

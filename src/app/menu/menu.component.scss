@@ -1,0 +1,36 @@
+.list-group-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.list-group-item {
+    transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* construction-menu.component.scss */
+.step-bullet {
+    width: 24px;
+    height: 24px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+
+    .group:hover & {
+        background-color: #2563eb;
+    }
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}

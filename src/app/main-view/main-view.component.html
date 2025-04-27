@@ -1,0 +1,46 @@
+<!-- main-view.component.html -->
+<div class="flex flex-col lg:flex-row min-h-screen bg-gray-50">
+
+    <!-- Lewy panel - menu -->
+    <div class="w-full lg:w-1/4 xl:w-1/5 bg-white border-r border-gray-200 p-4 lg:min-h-screen">
+        <app-menu></app-menu>
+    </div>
+
+    <!-- Prawy panel - treść -->
+    <main class="flex-1 p-4 lg:p-6">
+
+        <!-- Taby na górze -->
+        <div class="flex border-b border-gray-200 mb-6">
+            <button [class]="activeTab() === 'article' ? 
+            'border-b-2 border-blue-500 text-blue-600' : 
+            'text-gray-500 hover:text-gray-700'" class="px-4 py-2 font-medium" (click)="activeTab.set('article')">
+                Artykuł
+            </button>
+            <button [class]="activeTab() === 'checklist' ? 
+            'border-b-2 border-blue-500 text-blue-600' : 
+            'text-gray-500 hover:text-gray-700'" class="px-4 py-2 font-medium ml-2"
+                (click)="activeTab.set('checklist')">
+                Checklista
+            </button>
+        </div>
+
+        <!-- Treść artykułu -->
+        <app-article *ngIf="activeTab() === 'article'" [content]="currentStepContent()"></app-article>
+
+        <!-- Checklista -->
+        <div *ngIf="activeTab() === 'checklist'" class="bg-white p-4 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-4">Checklista dla etapu</h3>
+            <ul class="space-y-2">
+                <li *ngFor="let item of checklistItems()" class="flex items-center">
+                    <input type="checkbox" [id]="'item-' + item.id" [checked]="item.checked"
+                        (change)="toggleChecklistItem(item.id)"
+                        class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                    <label [for]="'item-' + item.id"
+                        [class]="item.checked ? 'ml-2 text-gray-500 line-through' : 'ml-2'">
+                        {{ item.text }}
+                    </label>
+                </li>
+            </ul>
+        </div>
+    </main>
+</div>

@@ -1,0 +1,56 @@
+<div class="container mx-auto p-6">
+  <!-- Sekcja zarządzania artykułami -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-4">Lista artykułów</h2>
+    <button (click)="goToEdit()" class="mb-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+      ➕ Dodaj nowy artykuł
+    </button>
+
+    <ul *ngIf="articles$ | async as articles; else loading" class="space-y-3">
+      <li *ngFor="let article of articles" class="p-3 border rounded-lg hover:bg-gray-50">
+        <div class="flex justify-between items-center">
+          <div>
+            <strong class="text-lg">{{ article.title }}</strong><br>
+            <small class="text-gray-500">Dodano: {{ article.createdAt?.toDate() | date:'short' }}</small>
+          </div>
+          <button (click)="goToEdit(article.id)" class="text-blue-500 hover:text-blue-700 px-3 py-1 border rounded">
+            Edytuj
+          </button>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Sekcja zarządzania etapami budowy -->
+  <section>
+    <h2 class="text-2xl font-bold mb-4">Etapy budowy</h2>
+    <button (click)="goToStepEdit()" class="mb-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+      ➕ Dodaj nowy etap
+    </button>
+
+    <ul *ngIf="constructionSteps$ | async as steps; else loading" class="space-y-3">
+      <li *ngFor="let step of steps" class="p-3 border rounded-lg hover:bg-gray-50">
+        <div class="flex justify-between items-center">
+          <div>
+            <strong class="text-lg">{{ step.title }}</strong><br>
+            <small class="text-gray-500">Kolejność: {{ step.order || 0 }}</small>
+          </div>
+          <div class="space-x-2">
+            <button (click)="goToStepEdit(step.id)" class="text-blue-500 hover:text-blue-700 px-3 py-1 border rounded">
+              Edytuj
+            </button>
+            <button (click)="deleteStep(step.id)" class="text-red-500 hover:text-red-700 px-3 py-1 border rounded">
+              Usuń
+            </button>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <ng-template #loading>
+    <div class="p-4 text-center text-gray-500">
+      <p>Wczytywanie danych...</p>
+    </div>
+  </ng-template>
+</div>

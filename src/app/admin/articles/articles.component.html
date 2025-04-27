@@ -1,0 +1,12 @@
+<h2>{{ id ? 'Edytuj artykuł' : 'Dodaj nowy artykuł' }}</h2>
+
+<label>Tytuł:</label>
+<input [(ngModel)]="title" class="form-control mb-3" />
+
+<label>Treść:</label>
+<quill-editor [(ngModel)]="content" [styles]="{ height: '300px' }"></quill-editor>
+
+<div class="mt-3">
+  <button (click)="save()">Zapisz</button>
+  <button (click)="router.navigate(['/admin'])">Anuluj</button>
+</div>

@@ -1,0 +1,69 @@
+/* app.component.scss - dodaj na końcu */
+.footer-container {
+  position: relative;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  padding: 3rem 1rem;
+  border-top: 1px solid #e9ecef;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #6c757d, #adb5bd, #6c757d);
+  }
+
+  a {
+    color: #495057;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #212529;
+      text-decoration: none;
+    }
+  }
+}
+
+/* Dostosowane klasy Tailwind */
+:host ::ng-deep {
+  .footer-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+    transition: all 0.5s ease;
+
+    &:hover {
+      border-color: #6c757d;
+    }
+  }
+
+  .link-text {
+    color: #6c757d;
+    transition: color 0.3s ease;
+  }
+
+  .shine-link {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #6c757d, transparent);
+      opacity: 0;
+      transition: all 0.7s ease;
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
+  }
+}
