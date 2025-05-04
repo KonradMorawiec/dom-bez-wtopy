@@ -5,6 +5,7 @@ import { AdminArticlesComponent } from './admin/articles/articles.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { adminGuard } from './guards/admin-guard';
 import { MainViewComponent } from './main-view/main-view.component';
+import { MenuEditorComponent } from './admin/menu-editor/menu-editor.component';
 export const routes: Routes = [
   {
     path: '',
@@ -41,6 +42,11 @@ export const routes: Routes = [
   {
     path: 'admin/article/:id',
     component: AdminArticlesComponent,
+    canActivate: [adminGuard]
+  },
+  {
+    path: 'admin/menu-editor',
+    component: MenuEditorComponent,
     canActivate: [adminGuard]
   },
   {

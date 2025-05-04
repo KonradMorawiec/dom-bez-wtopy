@@ -15,6 +15,9 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
+    if (password.length > 100) {
+      return Promise.reject({ code: 'auth/too-long-password' });
+    }
     return signInWithEmailAndPassword(this.auth, email, password);
   }
 

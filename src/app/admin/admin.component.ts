@@ -31,7 +31,7 @@ export class AdminComponent {
   }
 
   goToStepEdit(id?: string) {
-    this.router.navigate(['/admin/construction-step', id].filter(Boolean));
+    this.router.navigate(['/admin/menu-editor', id].filter(Boolean));
   }
 
   async deleteStep(id: string) {
