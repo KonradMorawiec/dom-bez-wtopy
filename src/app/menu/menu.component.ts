@@ -1,51 +1,45 @@
-// menu.component.ts
-import { Component, signal, computed, Output, EventEmitter, inject } from '@angular/core';
+import { Component, signal, Output, EventEmitter, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, of, switchMap } from 'rxjs';
-import { doc, docData } from '@angular/fire/firestore';
-import { Firestore } from '@angular/fire/firestore';
-import { Article, ConstructionStep } from '../models/menu.interface';
+import { Firestore, collection, collectionData } from '@angular/fire/firestore';
+import { MatIconModule } from '@angular/material/icon';
+import { ConstructionStep } from '../models/menu.interface';
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
-export class ConstructionMenuComponent {
+export class ConstructionMenuComponent implements OnInit {
   @Output() stepSelected = new EventEmitter<ConstructionStep>();
-  firestore = inject(Firestore);
+  private firestore = inject(Firestore);
 
-  steps$: Observable<ConstructionStep[]> = of([]);
+  // Observable with steps from Firestore
+  steps$: Observable<ConstructionStep[]>;
 
-  steps(): ConstructionStep[] {
-    return [
-      {
-        id: '1',
-        title: 'Foundation',
-        order: 1,
-        articleId: 'article-1',
-        children: ['Excavation', 'Concrete Pouring'],
-        checklist: [
-          { id: 1, text: 'Excavation completed', checked: true },
-          { id: 2, text: 'Concrete poured', checked: false }
-        ],
-        completed: false
-      },
-      {
-        id: '2',
-        title: 'Framing',
-        order: 2,
-        articleId: 'article-2',
-        children: ['Walls', 'Roof'],
-        checklist: [
-          { id: 3, text: 'Walls built', checked: false },
-          { id: 4, text: 'Roof installed', checked: false }
-        ],
-        completed: false
+  constructor() {
+    // Reference to your Firestore collection
+    const stepsCollection = collection(this.firestore, 'menus');
+
+    // Get data with document IDs
+    this.steps$ = collectionData(stepsCollection, { idField: 'RJOKRLzzyOKPnJtVODPz' }).pipe(
+      map(steps => {
+        const activeStep = steps.find(step => step['isActive']); // Find the active step
+        return activeStep ? activeStep['items'] : []; // Return its 'items' or an empty array if no active step
+      })
+    );
+  }
+
+  ngOnInit() {
+    // Initialize the active step index to the first step
+    this.steps$.subscribe(steps => {
+      if (steps.length > 0) {
+        this.activeStepIndex.set(0);
       }
-    ];
+      console.warn('Steps:', steps);
+    });
   }
 
   // Sygnał przechowujący aktualnie otwarty krok
@@ -61,18 +55,7 @@ export class ConstructionMenuComponent {
     this.stepSelected.emit(step);
   }
 
-  // Dynamiczne klasy dla nagłówka kroku
-  getStepHeaderClass(step: ConstructionStep, index: number): string {
-    const baseClasses = 'p-2 rounded transition-colors duration-200 cursor-pointer';
-    const isActive = this.activeStepIndex() === index;
-    const isCompleted = step.completed;
-
-    if (isActive) {
-      return `${baseClasses} bg-blue-50 border border-blue-200 ${isCompleted ? 'text-green-600' : 'text-gray-800'
-        }`;
-    }
-
-    return `${baseClasses} hover:bg-gray-50 ${isCompleted ? 'text-green-600' : 'text-gray-800'
-      }`;
+  print(data): void {
+    console.log('Print: ', data);
   }
 }

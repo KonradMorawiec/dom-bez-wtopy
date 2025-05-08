@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore'; // Keep using compat
+import { Component, inject, OnInit } from '@angular/core';
+import { Firestore, collection, collectionData, doc, deleteDoc, updateDoc, addDoc } from '@angular/fire/firestore';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Timestamp } from '@angular/fire/firestore';
 
 interface MenuItem {
   id?: string;
@@ -29,23 +30,18 @@ interface Menu {
     CommonModule,
     ReactiveFormsModule
   ],
-  providers: [
-    AngularFirestore,
-  ],
   standalone: true
 })
 export class MenuEditorComponent implements OnInit {
+  private firestore = inject(Firestore);
+
   menus: Menu[] = [];
   selectedMenu: Menu | null = null;
   menuForm: FormGroup;
   isEditing = false;
   isSubmitting = false;
-  showDeleteConfirmation = false;
 
-  constructor(
-    private firestore: AngularFirestore,
-    private fb: FormBuilder
-  ) {
+  constructor(private fb: FormBuilder) {
     this.menuForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       items: this.fb.array([])
@@ -57,11 +53,16 @@ export class MenuEditorComponent implements OnInit {
   }
 
   loadMenus() {
-    this.firestore.collection<Menu>('menus', ref => ref.orderBy('createdAt', 'desc'))
-      .valueChanges({ idField: 'id' })
-      .subscribe(menus => {
-        this.menus = menus;
-      });
+    const menusCollection = collection(this.firestore, 'menus');
+    collectionData(menusCollection, { idField: 'id' }).subscribe((menus: any[]) => {
+      this.menus = menus.map(menu => ({
+        id: menu.id,
+        name: menu.name,
+        items: menu.items || [],
+        createdAt: menu.createdAt?.toDate() || new Date(),
+        updatedAt: menu.updatedAt?.toDate() || undefined
+      }));
+    });
   }
 
   initForm(menu?: Menu) {
@@ -135,34 +136,44 @@ export class MenuEditorComponent implements OnInit {
   }
 
   confirmDelete(menuId: string) {
-    this.deleteMenu(menuId)
+    this.deleteMenu(menuId);
   }
 
-  deleteMenu(menuId: string) {
-    this.firestore.collection('menus').doc(menuId).delete();
+  async deleteMenu(menuId: string) {
+    try {
+      const menuDoc = doc(this.firestore, `menus/${menuId}`);
+      await deleteDoc(menuDoc);
+    } catch (error) {
+      console.error('Error deleting menu:', error);
+    }
   }
 
-  saveMenu() {
+  async saveMenu() {
     if (this.menuForm.invalid || this.isSubmitting) return;
 
     this.isSubmitting = true;
     const menuData = {
       name: this.menuForm.value.name,
       items: this.menuForm.value.items,
-      updatedAt: new Date(),
-      createdAt: this.selectedMenu?.createdAt || new Date()
+      updatedAt: Timestamp.now(),
+      createdAt: this.selectedMenu?.createdAt || Timestamp.now()
     };
 
-    const savePromise = this.selectedMenu?.id
-      ? this.firestore.collection('menus').doc(this.selectedMenu.id).update(menuData)
-      : this.firestore.collection('menus').add(menuData);
+    try {
+      if (this.selectedMenu?.id) {
+        const menuDoc = doc(this.firestore, `menus/${this.selectedMenu.id}`);
+        await updateDoc(menuDoc, menuData);
+      } else {
+        const menusCollection = collection(this.firestore, 'menus');
+        await addDoc(menusCollection, menuData);
+      }
 
-    savePromise
-      .then(() => {
-        this.isEditing = false;
-        this.selectedMenu = null;
-      })
-      .catch(error => console.error('Error saving menu:', error))
-      .finally(() => this.isSubmitting = false);
+      this.isEditing = false;
+      this.selectedMenu = null;
+    } catch (error) {
+      console.error('Error saving menu:', error);
+    } finally {
+      this.isSubmitting = false;
+    }
   }
 }

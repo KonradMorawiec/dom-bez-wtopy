@@ -1,30 +1,40 @@
 <!-- construction-menu.component.html -->
-<div class="space-y-2">
-  <div class="px-2 pb-2">
-    <h3 class="text-lg font-semibold">Etapy budowy</h3>
+<div class="bg-white rounded-lg shadow-sm p-4">
+  <div class="mb-4 border-b border-gray-100 pb-3">
+    <h3 class="text-lg font-semibold text-gray-700">Etapy budowy</h3>
   </div>
 
-  <div class="space-y-1">
-    <div *ngFor="let step of steps(); let i = index" class="group">
-      <div (click)="toggleStep(i)" [class]="getStepHeaderClass(step, i)">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <div class="step-bullet">{{ i+1 }}</div>
-            <span class="ml-2">{{ step.title }}</span>
+  <div class="space-y-2">
+    <ng-container *ngIf="steps$ | async as steps">
+      <div *ngFor="let step of steps; let i = index" class="group">
+        <div (click)="toggleStep(i)"
+          class="p-3 rounded-lg transition-all duration-300 cursor-pointer hover:bg-indigo-50">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-6 h-6 bg-indigo-600 text-white rounded-full flex items-center justify-center text-xs font-medium transition-colors group-hover:bg-indigo-700">
+                {{ i+1 }}
+              </div>
+              <span class="text-gray-700 font-medium">{{ step.title }}</span>
+            </div>
+            <mat-icon class="text-gray-400 transition-transform duration-300 transform"
+              [class.rotate-180]="activeStepIndex() === i">
+              expand_more
+            </mat-icon>
           </div>
-          <span class="text-gray-400 transform transition-transform"
-            [class.rotate-180]="activeStepIndex() === i">▼</span>
         </div>
-      </div>
 
-      <!-- Podpunkty -->
-      <div *ngIf="activeStepIndex() === i" class="ml-8 mt-1 space-y-1">
-        <div *ngFor="let sub of step.children" class="flex items-center p-1 hover:bg-gray-50 rounded cursor-pointer"
-          (click)="selectStep(step)">
-          <span class="text-gray-400 mr-2">•</span>
-          <span class="text-sm">{{ sub }}</span>
+        <!-- Podpunkty -->
+        <div *ngIf="activeStepIndex() === i" class="ml-8 space-y-1 overflow-hidden transition-all duration-300 ease-out"
+          [@.disabled]="false">
+          <div *ngFor="let sub of step.children"
+            class="flex items-center pl-2 pr-3 py-2 rounded-md cursor-pointer transition-colors duration-200 hover:bg-indigo-50"
+            (click)="selectStep(step)">
+            <mat-icon class="text-indigo-600 mr-2 text-sm">chevron_right</mat-icon>
+            <span class="text-gray-600 text-sm">{{ sub.title }}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-container>
   </div>
 </div>

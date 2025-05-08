@@ -7,7 +7,9 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:dom-bez-wtopy": "node dist/dom-bez-wtopy/server/server.mjs"
+    "serve:ssr:dom-bez-wtopy": "node dist/dom-bez-wtopy/server/server.mjs",
+    "clean": "rimraf node_modules package-lock.json && npm install",
+    "clean:full": "rimraf node_modules package-lock.json .angular/cache && npm install"
   },
   "private": true,
   "dependencies": {
@@ -24,10 +26,12 @@
     "@heroicons/react": "^2.2.0",
     "bootstrap": "^5.3.5",
     "express": "^4.18.2",
-    "firebase": "^11.6.0",
+    "firebase": "^11.7.1",
     "firebase-tools": "^13.35.1",
+    "material-design-icons": "^3.0.1",
     "ngx-quill": "^27.0.2",
     "quill": "^2.0.3",
+    "rimraf": "^5.0.5",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
